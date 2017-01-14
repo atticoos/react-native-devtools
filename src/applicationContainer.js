@@ -4,6 +4,7 @@ import DevtoolsContainer from './devtoolsContainer';
 import MenuToggle from './menuToggle';
 import attach from './componentTree';
 import RenderInspector from './renderInspector';
+import RenderOutliner from './renderOutliner';
 
 attach(React);
 
@@ -16,23 +17,25 @@ class Devtools extends React.Component {
       <View style={styles.appContainer}>
         <View style={styles.appContainer} ref={component => {
             if (!this.root) {
-              this.root = component;
+              this.root = ReactNative.findNodeHandle(component);
             }
-            console.log('r', this.root)
           }}>
           {this.props.children}
         </View>
         <MenuToggle onPress={() => this.setState({active: !this.state.active})} />
         {this.state.active &&
-          <RenderInspector
-            inspectedViewTag={this.root && ReactNative.findNodeHandle(this.root)}
-          />
+          <RenderOutliner inspectedViewTag={this.root} />
         }
       </View>
     );
   }
 }
+/*
 
+  <RenderInspector
+    inspectedViewTag={this.root}
+  />
+ */
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1
