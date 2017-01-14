@@ -30,13 +30,12 @@ export default class App extends Component {
   render() {
 
     return (
-     <TouchableOpacity style={styles.container} onPress={() => this.setState({count: this.state.count + 1})}>
       <View style={styles.flex} ref={component => this.root = component}>
         <Text>Parent</Text>
+        <Button onPress={() => this.setState({count: this.state.count + 1})}>Change Parent State</Button>
 
         <Child count={this.state.count} />
       </View>
-      </TouchableOpacity>
     );
   }
 }
@@ -58,13 +57,14 @@ class Child extends React.Component {
   };
   render () {
     return (
-      <TouchableOpacity onPress={() => this.setState({count: this.state.count + 1})}>
-        <View style={styles.component}>
-          <Text>Child A</Text>
-          <DeeplyNestedChild name="B" count={this.props.count} />
-          <DeeplyNestedChild name="C" count={this.props.count} />
-        </View>
-      </TouchableOpacity>
+      <View style={styles.component}>
+        <Text>Child A</Text>
+        <Button onPress={() => this.setState({count: this.state.count + 1})}>
+          Change Child A State
+        </Button>
+        <DeeplyNestedChild name="B" count={this.props.count} />
+        <DeeplyNestedChild name="C" count={this.props.count} />
+      </View>
     )
   }
 }
@@ -75,16 +75,24 @@ class DeeplyNestedChild extends React.Component {
   };
   render () {
     return (
-      <TouchableOpacity
-        style={styles.component}
-        onPress={() => this.setState({count: this.state.count + 1})}>
-        <View>
-          <Text>Deeply Nested Child {this.props.name}</Text>
-          <Text>Click to Render</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.component}>
+        <Text>Deeply Nested Child {this.props.name}</Text>
+        <Button onPress={() => this.setState({count: this.state.count + 1})}>
+          Change Deeply Nested Child {this.props.name} State
+        </Button>
+      </View>
     )
   }
+}
+
+function Button ({children, onPress}) {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.button}>
+        <Text>{children}</Text>
+      </View>
+    </TouchableOpacity>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -113,4 +121,8 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  button: {
+    padding: 6,
+    backgroundColor: 'lightgray'
+  }
 });

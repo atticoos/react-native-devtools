@@ -5,12 +5,13 @@ import MenuToggle from './menuToggle';
 import attach from './componentTree';
 import RenderInspector from './renderInspector';
 import RenderOutliner from './renderOutliner';
+import DevMenu from './menu';
 
 attach(React);
 
 class Devtools extends React.Component {
   state = {
-    active: false
+    mode: null
   };
   render() {
     return (
@@ -22,9 +23,15 @@ class Devtools extends React.Component {
           }}>
           {this.props.children}
         </View>
-        <MenuToggle onPress={() => this.setState({active: !this.state.active})} />
-        {this.state.active &&
+        <DevMenu
+          mode={this.state.mode}
+          onSelectedMode={mode => this.setState({mode})}
+        />
+        {this.state.mode === 'outliner' &&
           <RenderOutliner inspectedViewTag={this.root} />
+        }
+        {this.state.mode === 'inspector' &&
+          <RenderInspector inspectedViewTag={this.root} />
         }
       </View>
     );
@@ -32,9 +39,7 @@ class Devtools extends React.Component {
 }
 /*
 
-  <RenderInspector
-    inspectedViewTag={this.root}
-  />
+
  */
 const styles = StyleSheet.create({
   appContainer: {

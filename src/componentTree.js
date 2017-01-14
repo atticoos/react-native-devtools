@@ -26,7 +26,7 @@ export function getRenderTree () {
 
 function isReactNativeNode(node) {
   var type = getDisplayName(node._currentElement.type);
-  var types = ['RCTText', 'Text', 'View', 'RCTView'];
+  var types = ['RCTText', 'Text', 'View', 'RCTView', 'TouchableOpacity', 'Touchable'];
   return types.indexOf(type) > -1;
 }
 

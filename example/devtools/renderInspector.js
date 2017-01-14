@@ -17,6 +17,10 @@ export default class RenderInspector extends React.Component {
     inspecting: false
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.inspectTimeout)
+  }
+
   inspect(frame, node) {
     clearTimeout(this.inspectTimeout);
     var handle = ReactNative.findNodeHandle(node);

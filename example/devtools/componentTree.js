@@ -1,6 +1,7 @@
 import ReactNative, {ElementBox} from 'react-native';
 
 var renderTree = {};
+var renderObservers = [];
 
 export function getDisplayName (component) {
   return component.displayName || component.constructor.displayName || component.constructor.name;
@@ -25,7 +26,7 @@ export function getRenderTree () {
 
 function isReactNativeNode(node) {
   var type = getDisplayName(node._currentElement.type);
-  var types = ['RCTText', 'Text', 'View', 'RCTView'];
+  var types = ['RCTText', 'Text', 'View', 'RCTView', 'TouchableOpacity', 'Touchable'];
   return types.indexOf(type) > -1;
 }
 
@@ -102,6 +103,12 @@ function traverse (nodes, tree = {}) {
 
 function buildTree (node) {
   var path = buildAncestryPath(node);
+  var isDevComponent = path.filter(i => i.name === 'Devtools');
+  console.log('path', path);
+  console.log('is dev', isDevComponent)
+  if (isDevComponent.length > 0) {
+    return null;
+  }
   var tree = traverse(path.reverse())
   buildRenderTree(tree);
   return tree;
@@ -127,13 +134,22 @@ function buildRenderTree (tree, renderTreeLevel = renderTree) {
   buildRenderTree(tree.child, renderTreeLevel[tree.id].children);
 }
 
+export function subscribeToRenders (observer) {
+  renderObservers.push(observer);
+  return () => renderObservers = renderObservers.filter(o => o !== observer);
+}
+
 function createComponentDidUpdate () {
   return function componentDidUpdate (prevProps, prevState) {
     const displayName = getDisplayName(this);
     // console.log(`${displayName} updated`, getNodeId(this._reactInternalInstance));
 
     var currentNode = this._reactInternalInstance;
-    buildTree(currentNode)
+    if (!buildTree(currentNode)) {
+      return;
+    }
+    console.log('notifying observers', renderObservers, this);
+    renderObservers.forEach(o => o(this._reactInternalInstance));
     // console.log('HANDLE', this._reactInternalInstance);
     // console.log(buildTree(currentNode));
     // console.log('render tree', renderTree);
